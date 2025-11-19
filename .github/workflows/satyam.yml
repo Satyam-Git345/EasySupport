@@ -3,8 +3,9 @@ name: React CI
 on:
   push:
     branches: [ main ]
-    
+
 jobs:
+
   security:
     runs-on: ubuntu-latest
     steps:
@@ -12,6 +13,14 @@ jobs:
 
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm ci
 
       - name: Run Snyk
         uses: snyk/actions/node@master
@@ -22,6 +31,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    needs: security   # <-- ensures build runs AFTER security checks
 
     steps:
       - name: Checkout Code
